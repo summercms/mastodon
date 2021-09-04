@@ -23,6 +23,7 @@
 #  in_reply_to_account_id :bigint(8)
 #  poll_id                :bigint(8)
 #  deleted_at             :datetime
+#  edited_at              :datetime
 #
 
 class Status < ApplicationRecord
@@ -207,6 +208,10 @@ class Status < ApplicationRecord
 
   def distributable?
     public_visibility? || unlisted_visibility?
+  end
+
+  def edited?
+    edited_at.present?
   end
 
   alias sign? distributable?

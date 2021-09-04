@@ -6,10 +6,19 @@ class ActivityPub::ActivityPresenter < ActiveModelSerializers::Model
   class << self
     def from_status(status)
       new.tap do |presenter|
+        presenter.type = begin
+          if status.reblog?
+            'Announce'
+          elsif status.edited?
+            'Update'
+          else
+            'Create'
+          end
+        end
+
         presenter.id        = ActivityPub::TagManager.instance.activity_uri_for(status)
-        presenter.type      = status.reblog? ? 'Announce' : 'Create'
         presenter.actor     = ActivityPub::TagManager.instance.uri_for(status.account)
-        presenter.published = status.created_at
+        presenter.published = status.edited_at || status.created_at
         presenter.to        = ActivityPub::TagManager.instance.to(status)
         presenter.cc        = ActivityPub::TagManager.instance.cc(status)
 
